@@ -11,6 +11,7 @@ import tacos.Taco;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -35,7 +36,8 @@ public class DesignTacoController {
         Ingredient.Type[] types = Ingredient.Type.values();
         for(Ingredient.Type type : types) {
             model.addAttribute(type.toString().toLowerCase(),
-                    filterByType(ingredients,type));
+                    filterByType(ingredients,type)
+                    );
         }
 
         model.addAttribute("design", new Taco());
@@ -43,7 +45,13 @@ public class DesignTacoController {
         return "design";
     }
 
-    private Object filterByType(List<Ingredient> ingredients, Ingredient.Type type) {
-        return null;
+    private List<Ingredient> filterByType(
+            List<Ingredient> ingredients, Ingredient.Type type) {
+        return ingredients
+                .stream()
+                .filter(x -> x.getType().equals(type))
+                .collect(Collectors.toList());
     }
+
+
 }
