@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tacos.Ingredient;
-
+import tacos.Ingredient.Type;
 import tacos.Taco;
 
 import javax.validation.Valid;
@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/design")
 public class DesignTacoController {
 
-    @GetMapping
-    public String showDesignForm(Model model) {
+    @ModelAttribute
+    public void addIngredientsToModel(Model model) {
         List<Ingredient> ingredients = Arrays.asList(
             new Ingredient("FLTO", "Flour Tortilla", Ingredient.Type.WRAP),
             new Ingredient("COTO", "Corn Tortilla", Ingredient.Type.WRAP),
@@ -37,31 +37,35 @@ public class DesignTacoController {
             new Ingredient("SRCR", "Sour Cream", Ingredient.Type.SAUCE)
         );
 
-        Ingredient.Type[] types = Ingredient.Type.values();
-        for(Ingredient.Type type : types) {
+        Type[] types = Ingredient.Type.values();
+        for(Type type : types) {
             model.addAttribute(type.toString().toLowerCase(),
-                    filterByType(ingredients,type)
-                    );
+                    filterByType(ingredients,type));
         }
 
-        model.addAttribute("design", new Taco());
-
-        return "design";
     }
 
     private List<Ingredient> filterByType(
-            List<Ingredient> ingredients, Ingredient.Type type) {
+            List<Ingredient> ingredients, Type type) {
         return ingredients
                 .stream()
                 .filter(x -> x.getType().equals(type))
                 .collect(Collectors.toList());
     }
 
+    @GetMapping
+    public String showDesignForm(Model model) {
+        model.addAttribute("design", new Taco());
+        return "design";
+    }
+
+
     @PostMapping
     public String processDesign(@Valid @ModelAttribute("design") Taco design, Errors errors, Model model) {
-        if(errors.hasErrors()) {
-            return "design";
-        }
+        //if(errors.hasErrors()) {
+            //log.info("We have errors!");
+            //return "design";
+        //}
 
         //Save the taco design
         //We'll do this in chapter 3
